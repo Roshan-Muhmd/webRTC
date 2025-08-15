@@ -60,8 +60,14 @@ On Device B, paste the ID into the "Connect" field and click Connect.
 Allow camera/microphone permissions.
 
 
-"Hang up button" stop streaming for listerner
-"Stop Broadcast" for all connection termination for broadcster
+## Controls
 
+- Start Broadcast – Start sending your video/audio stream
+
+- Connect – Connect to another peer by their ID
+
+- Hang Up – Terminate the call
+
+- Hang Up All – Disconnect from all active peers
 
 
