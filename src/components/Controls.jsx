@@ -30,9 +30,9 @@ debugger
       
       <textarea
         readOnly
-        value={peerId}
-        placeholder="Your Peer ID"
-        style={{ width: "250px", height: "40px", resize: "none" }}
+        value={isBroadcasting?  peerId : ""}
+        placeholder="Start Broadcast to get your Peer ID"
+        style={{ width: "300px", height: "40px", resize: "none" }}
       />
       <button onClick={copyPeerId}>Copy</button>
 

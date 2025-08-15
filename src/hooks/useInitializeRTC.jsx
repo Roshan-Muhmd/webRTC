@@ -120,6 +120,8 @@ const useInitializeRTC = () => {
   // Start broadcasting local video/audio stream
   const startBroadcast = async () => {
     try {
+
+    //get video and audio
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true,
@@ -170,7 +172,13 @@ const useInitializeRTC = () => {
   // Connect to another broadcaster by ID
   const connectToBroadcaster = async (id = connectId, auto = false) => {
     debugger
-    if (!id) return;
+    if (!id ) return;
+    
+    //no need to connect if connect id is of broadcster itself
+    if(peerId === connectId) {
+        alert("Please use another ID")
+        return
+    }
     updateStatus(id, "Connecting");
 
     let streamToSend = localStreamRef.current;
@@ -194,6 +202,7 @@ const useInitializeRTC = () => {
       }
     }
 
+    //initiate call with broadcaster
     const call = peerInstance.current.call(id, streamToSend);
 
     // Handle remote stream
@@ -213,6 +222,7 @@ const useInitializeRTC = () => {
       setConnectId("")
     });
 
+    //call error
     call.on("error", (err) => {
        alert("connection failed")
         updateStatus(id, "Failed to connect");
@@ -224,13 +234,15 @@ const useInitializeRTC = () => {
 
   // End all connections and reset state
   const hangUp = () => {
+    debugger
     peerInstance.current?.destroy();
     setRemoteStreams([]);
     setPeerStatuses({});
     setIsBroadcasting(false);
     setPeerId("");
     setConnectId("");
-
+    activeCallsRef.current = [];
+    
     //Start new peer instance after hangup
     initializePeer()
   };
@@ -245,8 +257,7 @@ const useInitializeRTC = () => {
           console.error("Error closing call", e);
         }
       });
-      activeCallsRef.current = [];
-      setRemoteStreams([])
+    
       hangUp()
   }
 
