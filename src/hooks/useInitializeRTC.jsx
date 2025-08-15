@@ -261,7 +261,6 @@ const useInitializeRTC = () => {
     peerInstance,
     localStreamRef,
     localVideoRef,
-    remoteStreams,
     isBroadcasting,
     setIsBroadcasting,
     peerId,
