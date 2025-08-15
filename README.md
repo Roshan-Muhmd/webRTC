@@ -26,13 +26,10 @@ Make sure you have installed:
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/<your-username>/webRTC.git
+   git clone https://github.com/Roshan-Muhmd/webRTC.git
    cd webRTC
-
-
-npm install
-
-npm run dev
+   npm install
+   npm run dev
 
 
 ## Usage Instructions
@@ -63,6 +60,8 @@ Allow camera/microphone permissions.
 ## Controls
 
 - Start Broadcast – Start sending your video/audio stream
+  
+- Stop Broadcast – Stop sending your video/audio stream
 
 - Connect – Connect to another peer by their ID
 
