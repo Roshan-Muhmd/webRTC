@@ -3,7 +3,6 @@ import ReactModal from "react-modal"
 
 
 const CommonPopup = (props) => {
-debugger
   const customStyles = {
     content: {
       top: '50%',

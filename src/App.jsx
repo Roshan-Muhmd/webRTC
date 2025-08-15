@@ -40,7 +40,7 @@ export default function App() {
 
   return (
     <div style={{ padding: "20px", fontFamily: "sans-serif" }}>
-      <h1>React WebRTC (PeerJS) with BroadcastChannel</h1>
+      <h1>React-WebRTC</h1>
       <broadcastContext.Provider
         value={broadcastData}
       >
@@ -53,6 +53,8 @@ export default function App() {
       {/* Remote Videos */}
        <IncomingVideoGrid/>
        
+
+       {/* Common modal for connection notification */}
        <CommonPopup modalStatus={broadcastData?.modalStatus}/>
       </broadcastContext.Provider>
     </div>

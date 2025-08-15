@@ -11,8 +11,10 @@ const Controls = () => {
     setConnectId,
     connectToBroadcaster,
     hangUp,
+    stopBroadcast,
+    activeCallsRef,
   } = useContext(broadcastContext);
-
+  
 
   return (
     <div
@@ -23,14 +25,22 @@ const Controls = () => {
         flexWrap: "wrap",
       }}
     >
-      {!isBroadcasting && (
-        <button onClick={startBroadcast} disabled={peerId ? false : true}>Start Broadcast</button>
-      )}
+      <button
+        onClick={isBroadcasting ? stopBroadcast : startBroadcast}
+        disabled={peerId ? false : true}
+      >
+        {peerId
+          ? isBroadcasting
+            ? "Stop Broadcast"
+            : "Start Broadcast"
+          : "Initializing..."}
+      </button>
+
       <textarea
         readOnly
-        value={peerId}
-        placeholder="Your Peer ID"
-        style={{ width: "250px", height: "40px", resize: "none" }}
+        value={isBroadcasting ? peerId : ""}
+        placeholder="Start Broadcast to get your Peer ID"
+        style={{ width: "300px", height: "40px", resize: "none" }}
       />
       <button onClick={copyPeerId}>Copy</button>
 
@@ -40,9 +50,23 @@ const Controls = () => {
         placeholder="Enter Broadcaster's Peer ID"
         style={{ width: "250px", height: "40px", resize: "none" }}
       />
-      <button onClick={() => connectToBroadcaster()}>Connect</button>
 
-      <button onClick={hangUp}>Hang Up</button>
+      {activeCallsRef.current.length == 0 ? (
+        <button
+          onClick={() => {
+            if (connectId === peerId) {
+              alert("Please enter another ID");
+              setConnectId("")
+              return;
+            }
+            connectToBroadcaster();
+          }}
+        >
+          Connect
+        </button>
+      ) : (
+        <button onClick={hangUp}>Hang Up</button>
+      )}
     </div>
   );
 };

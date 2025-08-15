@@ -1,12 +1,73 @@
-# React + Vite
+# WebRTC Peer-to-Peer Video Communication
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A peer-to-peer video streaming application built with **React** and **PeerJS**, using WebRTC for real-time audio/video communication.  
+This project supports multi-tab communication via **BroadcastChannel** for testing purposes, and manual ID exchange for cross-device connections.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
+- Peer-to-peer video streaming using WebRTC
+- Automatic peer discovery between browser tabs (local testing)
+- Manual peer ID exchange for real-world usage
+- Multiple connections handling
+- Call termination for individual or all connections
+- Status tracking for each peer
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Prerequisites
+Make sure you have installed:
+- **Node.js** (v16+ recommended)
+- **npm** or **yarn**
+- A [PeerJS server](https://peerjs.com/) (can use the public server for testing)
+
+---
+
+## Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/<your-username>/webRTC.git
+   cd webRTC
+
+
+npm install
+
+npm run dev
+
+
+## Usage Instructions
+1. Local Testing (Same Device, Multiple Tabs)
+
+Open the app in two browser tabs.
+
+
+
+Click "Start Broadcast" to begin streaming from your camera.
+The broadcast channel will automatically trigger connection in all open tabs 
+Cofirmation popup will open
+Confirm from respective tabs for instatnt connection
+
+
+
+2. Cross-Device Usage
+
+Open the app on Device A and Device B.
+
+On Device A, copy the Peer ID shown.
+
+On Device B, paste the ID into the "Connect" field and click Connect.
+
+Allow camera/microphone permissions.
+
+
+## Controls
+
+- Start Broadcast – Start sending your video/audio stream
+
+- Connect – Connect to another peer by their ID
+
+- Hang Up – Terminate the call
+
+- Hang Up All – Disconnect from all active peers
+
+
