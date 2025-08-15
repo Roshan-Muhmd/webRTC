@@ -17,9 +17,11 @@ const useInitializeRTC = () => {
   const localStreamRef = useRef(null);
   const peerInstance = useRef(null);
   const channelRef = useRef(null);
+  const userNameRef = useRef(null)
+  const activeCallsRef = useRef([]);
 
-  useEffect(() => {
-    // Initialize PeerJS connection
+
+  const initializePeer = () => {
     const peer = new Peer();
     peerInstance.current = peer;
 
@@ -30,11 +32,14 @@ const useInitializeRTC = () => {
 
     // Handle incoming WebRTC calls
     peer.on("call", (call) => {
-      call.answer();
+
+    //Answering call and returning video/audio stream
+      call.answer(localStreamRef.current);
+      activeCallsRef.current.push(call);
 
       updateStatus(call.peer, "Connecting");
 
-      // When remote stream is received, add/update it in the list
+      // When remote stream is received, add it in the list
       call.on("stream", (remoteStream) => {
         setRemoteStreams((prev) => [
           ...prev.filter((s) => s.peerId !== call.peer),
@@ -48,6 +53,13 @@ const useInitializeRTC = () => {
         updateStatus(call.peer, "Disconnected");
       });
     });
+  }
+ 
+  
+  useEffect(() => {
+    
+    // Initialize PeerJS connection
+    initializePeer()
 
     // Setup BroadcastChannel for same-device tab communication
     const channel = new BroadcastChannel("webrtc-signaling");
@@ -59,13 +71,22 @@ const useInitializeRTC = () => {
         const modalBody = (
           <>
             <h2>Confirmation</h2>
-            <p>Accept connection from User: {event.data.peerId} ?</p>
+            <p style={{ textAlign: "center" }}>
+              Broadcast started by User: {event.data?.username ??  event.data?.peerId}
+            </p>
+            <p style={{ textAlign: "center" }}>Accept connection ?</p>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <button
                 onClick={() => {
+                    debugger
                   setConnectId(event.data.peerId);
                   connectToBroadcaster(event.data.peerId, true);
                   setModalStatus({ open: false, message: "" });
+                  setRemoteStreams((prev) => [
+                    ...prev.filter((s) => s.peerId !== event.data.peerId),
+                    { peerId: event.data.peerId, stream: event.data.stream },
+                  ]);
+
                 }}
                 id="okBtn"
               >
@@ -90,8 +111,9 @@ const useInitializeRTC = () => {
 
     // Cleanup on component unmount
     return () => {
-      peer.destroy();
+      peerInstance.current?.destroy();
       channel.close();
+      
     };
   }, []);
 
@@ -106,10 +128,28 @@ const useInitializeRTC = () => {
       localVideoRef.current.srcObject = stream;
       setIsBroadcasting(true);
 
-      // Share peer ID with other tabs on the same device
-      channelRef.current.postMessage({
-        type: "BROADCAST_ID",
-        peerId,
+      setModalStatus({
+        open: true,
+        message: (
+          <>
+            <p>Enter username (* optional)</p>
+            <input style={{margin:"10px", height:"40px"}} ref={userNameRef}></input>
+            <button
+              onClick={() => {
+                debugger
+                // Share peer ID with other tabs on the same device
+                channelRef.current.postMessage({
+                  type: "BROADCAST_ID",
+                  peerId,
+                username: userNameRef?.current?.value || peerId,
+                });
+                setModalStatus({open:false,message:""})
+              }}
+            >
+              Proceed
+            </button>
+          </>
+        ),
       });
     } catch (err) {
       console.error("Error accessing camera/mic:", err);
@@ -129,6 +169,7 @@ const useInitializeRTC = () => {
 
   // Connect to another broadcaster by ID
   const connectToBroadcaster = async (id = connectId, auto = false) => {
+    debugger
     if (!id) return;
     updateStatus(id, "Connecting");
 
@@ -157,19 +198,28 @@ const useInitializeRTC = () => {
 
     // Handle remote stream
     call.on("stream", (remoteStream) => {
+        debugger
       setRemoteStreams((prev) => [
         ...prev.filter((s) => s.peerId !== call.peer),
         { peerId: call.peer, stream: remoteStream },
       ]);
+      activeCallsRef.current.push(call);
       updateStatus(call.peer, "Connected");
     });
 
     // Handle call end
     call.on("close", () => {
       updateStatus(call.peer, "Disconnected");
+      setConnectId("")
     });
 
-    if (!auto) setConnectId("");
+    call.on("error", (err) => {
+       alert("connection failed")
+        updateStatus(id, "Failed to connect");
+        setConnectId("");
+      });
+
+     /* setConnectId(""); */
   };
 
   // End all connections and reset state
@@ -180,7 +230,25 @@ const useInitializeRTC = () => {
     setIsBroadcasting(false);
     setPeerId("");
     setConnectId("");
+
+    //Start new peer instance after hangup
+    initializePeer()
   };
+
+  //Stop Broadcast and end all calls
+  const stopBroadcast = () => {
+   
+    activeCallsRef.current.forEach((call) => {
+        try {
+          call.close();
+        } catch (e) {
+          console.error("Error closing call", e);
+        }
+      });
+      activeCallsRef.current = [];
+      setRemoteStreams([])
+      hangUp()
+  }
 
   return {
     channelRef,
@@ -202,6 +270,8 @@ const useInitializeRTC = () => {
     modalStatus,
     setModalStatus,
     modalCallBack,
+    stopBroadcast,
+    activeCallsRef
   };
 };
 
