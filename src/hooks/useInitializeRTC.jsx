@@ -78,7 +78,7 @@ const useInitializeRTC = () => {
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <button
                 onClick={() => {
-                    debugger
+                    
                   setConnectId(event.data.peerId);
                   connectToBroadcaster(event.data.peerId, true);
                   setModalStatus({ open: false, message: "" });
@@ -138,7 +138,7 @@ const useInitializeRTC = () => {
             <input style={{margin:"10px", height:"40px"}} ref={userNameRef}></input>
             <button
               onClick={() => {
-                debugger
+                
                 // Share peer ID with other tabs on the same device
                 channelRef.current.postMessage({
                   type: "BROADCAST_ID",
@@ -171,14 +171,9 @@ const useInitializeRTC = () => {
 
   // Connect to another broadcaster by ID
   const connectToBroadcaster = async (id = connectId, auto = false) => {
-    debugger
+    
     if (!id ) return;
     
-    //no need to connect if connect id is of broadcster itself
-    if(peerId === connectId) {
-        alert("Please use another ID")
-        return
-    }
     updateStatus(id, "Connecting");
 
     let streamToSend = localStreamRef.current;
@@ -207,7 +202,7 @@ const useInitializeRTC = () => {
 
     // Handle remote stream
     call.on("stream", (remoteStream) => {
-        debugger
+        
       setRemoteStreams((prev) => [
         ...prev.filter((s) => s.peerId !== call.peer),
         { peerId: call.peer, stream: remoteStream },
@@ -234,7 +229,7 @@ const useInitializeRTC = () => {
 
   // End all connections and reset state
   const hangUp = () => {
-    debugger
+    
     peerInstance.current?.destroy();
     setRemoteStreams([]);
     setPeerStatuses({});
