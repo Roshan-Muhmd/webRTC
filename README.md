@@ -29,10 +29,9 @@ Make sure you have installed:
    git clone https://github.com/<your-username>/webRTC.git
    cd webRTC
 
-
-npm install
-
-npm run dev
+   ```bash
+   npm install
+   npm run dev
 
 
 ## Usage Instructions
